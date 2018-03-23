@@ -1,0 +1,36 @@
+--------------------------------------------------------------------------------
+-- Decimal Places from text field
+--
+-- Find the number of decimal places, integer and fractional values from a text field
+-- that is in decimal format
+--------------------------------------------------------------------------------
+IF EXISTS (SELECT 1 FROM sys.tables WHERE name = 'TextToDecimalTest')
+BEGIN
+	DROP TABLE dbo.TextToDecimalTest
+END
+
+CREATE TABLE dbo.TextToDecimalTest
+(
+	 ID INTEGER
+	,Value VARCHAR(250)
+)
+
+INSERT INTO TextToDecimalTest VALUES (1, '0')
+INSERT INTO TextToDecimalTest VALUES (2, '0.0')
+INSERT INTO TextToDecimalTest VALUES (3, '0.01')
+INSERT INTO TextToDecimalTest VALUES (4, '1')
+INSERT INTO TextToDecimalTest VALUES (5, '10.001')
+INSERT INTO TextToDecimalTest VALUES (6, 'not a . value')
+
+-- Get all decimal values and extract number of decimal places, integer and fractional values
+SELECT
+	 ID
+	,Value
+	,LEN(LEFT(REVERSE(Value), CHARINDEX('.', REVERSE(Value)) -1)) AS NumberOfDecimalPlaces
+	,LEFT(Value, CHARINDEX('.', Value) -1) AS IntegerValue
+	,LEFT(REVERSE(Value), CHARINDEX('.', REVERSE(Value)) -1) AS FractionalValue		
+FROM
+	TextToDecimalTest
+WHERE
+	Value LIKE '%.%'
+	AND ISNUMERIC(Value) = 1
